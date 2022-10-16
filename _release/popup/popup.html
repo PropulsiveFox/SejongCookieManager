@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="popup.css">
+		<script src="popup.js" type="module" defer></script>
+	</head>
+	<body>
+		<div id="menu-grid">
+			<div>
+				<div>
+					<div class="flex-nowrap">
+						<input type="checkbox" id="samaks" name="samaks">
+						<div>키보드 보안좀 그만물어봐</div>
+					</div>
+					<div>
+						<input type="number" id="value-samaks" min="1" step="1" max="999999">
+						<input type="radio" id="day-samaks" name="unit-samaks">
+						<label for="day-samaks">일</label>
+						<input type="radio" id="hour-samaks" name="unit-samaks">
+						<label for="hour-samaks">시간</label>
+						<input type="radio" id="minute-samaks" name="unit-samaks">
+						<label for="minute-samaks">분</label>
+					</div>
+				</div>
+				<div>
+					<div class="flex-nowrap">
+						<input type="checkbox" id="kmitb" name="kmitb">
+						<div>블랙보드 로그아웃 하지 마라</div>
+					</div>
+					<div>
+						<input type="number" id="value-kmitb" min="1" step="1" max="999999">
+						<input type="radio" id="day-kmitb" name="unit-kmitb">
+						<label for="day-kmitb">일</label>
+						<input type="radio" id="hour-kmitb" name="unit-kmitb">
+						<label for="hour-kmitb">시간</label>
+						<input type="radio" id="minute-kmitb" name="unit-kmitb">
+						<label for="minute-kmitb">분</label>
+					</div>
+				</div>
+			</div>
+			<div style="display: flex; flex-direction: columm; align-items: stretch;">
+				<div id="disclaimer">
+					<input type="checkbox" id="security-risk-understood" name="security-risk-understood">
+					<label for="security-risk-understood">이 확장 기능의 보안 위험을 인지하고 있습니다.</label>
+				</div>
+				<div id="save-container">
+					<div id="load-status"></div>
+					<div style="flex-grow: 1"></div>
+					<div id="save-status"></div>
+					<input type="button" id="save-config" value="Save">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+

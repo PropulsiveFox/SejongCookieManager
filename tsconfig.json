@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ES2022",
+		"outDir": "_release",
+		"types": [
+			"chrome",
+			"firefox-webext-browser"
+		]
+	}
+}
