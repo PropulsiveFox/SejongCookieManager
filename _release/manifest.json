@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Sejong Cookie Lifetime Manager",
-	"version": "0.0.1",
+	"version": "0.1.0",
 
 	"description": "Allow users to manage lifetime of cookies of various websites related to Sejong University.",
 
@@ -19,16 +19,11 @@
 	"permissions": [
 		"storage",
 		"cookies",
-		"*://portal.sejong.ac.kr/*",
-		"*://blackboard.sejong.ac.kr/*"
-	],
-	"host_permissions": [
-		"*://portal.sejong.ac.kr/*",
-		"*://blackboard.sejong.ac.kr/*"
+		"*://*.sejong.ac.kr/*"
 	],
 
 	"background": {
-		"scripts": []
+		"page": "src/Background.html"
 	},
 
 	"content_scripts": [

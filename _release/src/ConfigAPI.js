@@ -1,4 +1,5 @@
 import Extension from "./Extension.js";
+import TimeUnit from "./TimeUnit.js";
 import Config from "./Config.js";
 class ConfigAPI {
     #id;
@@ -35,6 +36,32 @@ class ConfigAPI {
                 .then(() => resolve())
                 .catch(err => reject(err));
         });
+    }
+    parse_delta_time() {
+        if (this.enabled == false)
+            return undefined;
+        switch (this.unit) {
+            case TimeUnit.Year:
+                return this.value * 366 * 24 * 60 * 60;
+            case TimeUnit.Month:
+                return this.value * 31 * 24 * 60 * 60;
+            case TimeUnit.Week:
+                return this.value * 7 * 24 * 60 * 60;
+            case TimeUnit.Day:
+                return this.value * 24 * 60 * 60;
+            case TimeUnit.Hour:
+                return this.value * 60 * 60;
+            case TimeUnit.Minute:
+                return this.value * 60;
+            case TimeUnit.Second:
+            default:
+                return this.value;
+        }
+    }
+    parse_unix_time() {
+        if (this.enabled == false)
+            return undefined;
+        return Math.round(Date.now() / 1000) + this.parse_delta_time();
     }
 }
 export default ConfigAPI;

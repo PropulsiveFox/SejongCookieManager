@@ -1,25 +1,19 @@
-import Extension from "./Extension";
-
-namespace CookieWrap {
-	export type CookieSetter = (this: CookieWrap) => void;
-}
+import Extension from "./Extension.js";
 
 class CookieWrap {
-	#target: { name: string, url: string };
+	target: { name: string, url: string };
 
 	cookie: chrome.cookies.Cookie | browser.cookies.Cookie;
 
-	cookieSetter: CookieWrap.CookieSetter
 	cookieDetails: chrome.cookies.SetDetails | browser.cookies._SetDetails;
 
-	constructor(name: string, url: string, cookieSetter: CookieWrap.CookieSetter) {
-		this.#target = { name: name, url: url };
-		this.cookieSetter = cookieSetter;
+	constructor(name: string, url: string) {
+		this.target = { name: name, url: url };
 	}
 
 	get_cookie(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			Extension.api.cookies.get(this.#target)
+			Extension.api.cookies.get(this.target)
 				.then(cookie => {
 					this.cookie = cookie;
 					return resolve();
@@ -29,9 +23,13 @@ class CookieWrap {
 	}
 
 	set_cookie(): Promise<void> {
-		this.cookieSetter();
-		this.cookieDetails.url = this.#target.url;
+		// @ts-ignore
+		this.cookieDetails = new Object() as chrome.cookies.SetDetails;
+		this.cookieDetails.url = this.target.url;
 		for (let key in this.cookie) this.cookieDetails[key] = this.cookie[key];
+		// @ts-ignore
+		delete this.cookieDetails.session; delete this.cookieDetails.hostOnly;
+		delete this.cookieDetails.domain; delete this.cookieDetails.storeId;
 		return new Promise((resolve, reject) => {
 			// @ts-ignore
 			Extension.api.cookies.set(this.cookieDetails)

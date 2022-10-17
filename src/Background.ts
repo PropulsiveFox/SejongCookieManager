@@ -1,22 +1,101 @@
 import Extension from "./Extension.js";
-import ConfigAPI from "./ConfigAPI.js";
-import CookieWrap from "./CookieWrap.js";
+import ConfigCookies from "./ConfigCookies.js";
 
-interface ConfigCookies {
-	config: ConfigAPI;
-	cookies: Array<CookieWrap>;
+const defaultCookieSetter: ConfigCookies.CookieSetter = function (config, cookieWrap) {
+	cookieWrap.cookie.expirationDate = config.parse_unix_time();
 }
-class ConfigCookies {
-	config: ConfigAPI;
-	cookies: Array<CookieWrap>;
 
-	constructor(id: string, cookies: Array<{ name: string, url: string, cookieSetter: CookieWrap.CookieSetter }>) {
-		this.config = new ConfigAPI(id);
-		this.cookies = new Array();
-		cookies.forEach(obj => this.cookies.push(new CookieWrap(obj.name, obj.url, obj.cookieSetter)));
+/*
+	samaks
+*/
+const portalCookieSetter: ConfigCookies.CookieSetter = function (config, cookieWrap) {
+	if (cookieWrap.cookie == null) cookieWrap.cookie = {
+		name: 'chknos',
+		value: 'false',
+		domain: 'portal.sejong.ac.kr',
+		hostOnly: true,
+		path: '/',
+		secure: false,
+		httpOnly: false,
+		sameSite: 'no_restriction',
+		session: true,
+		firstPartyDomain: '',
+		partitionKey: null,
+		storeId: ''
 	}
-
-	updateCookies(): Promise<void> {
-
-	}
+	defaultCookieSetter(config, cookieWrap);
 }
+let samaks = new ConfigCookies('samaks', [
+	{
+		name: 'chknos',
+		url: 'https://portal.sejong.ac.kr/',
+		cookieSetter: portalCookieSetter
+	}
+]);
+Extension.api.runtime.onMessage.addListener(message => {
+	if (message == 'samaks') samaks.updateCookies();
+});
+Extension.api.storage.onChanged.addListener((changes, areaName) => {
+	if (areaName == 'local') {
+		samaks.updateCookies();
+	}
+});
+
+/*
+	kmitb
+*/
+const blackboardCookieSetter: ConfigCookies.CookieSetter = function (config, cookieWrap) {
+	type BbRouter = {
+		expires: string,
+		id: string,
+		signature: string,
+		site: string,
+		timeout: string,
+		user: string,
+		v: string,
+		xsrf: string
+	};
+
+	let value = cookieWrap.cookie.value;
+	let parsedValue = value.split(',')
+		.map(str => str.split(':'))
+		.reduce((acc, e) => {
+			acc[e[0].trim()] = e[1].trim();
+			return acc;
+		}, {}) as BbRouter;
+	parsedValue.expires = config.parse_unix_time().toString();
+	parsedValue.timeout = config.parse_delta_time().toString();
+	let keyValues = new Array();
+	for (let key in parsedValue) {
+		keyValues.push(`${key}:${parsedValue[key]}`);
+	}
+	setTimeout(() => {
+		cookieWrap.cookie.value = keyValues.join(',');
+	}, 10);
+
+	defaultCookieSetter(config, cookieWrap);
+}
+let kmitb = new ConfigCookies('kmitb', [
+	{
+		name: 'apt.sid',
+		url: 'https://.sejong.ac.kr',
+		cookieSetter: defaultCookieSetter
+	},
+	{
+		name: 'BbRouter',
+		url: 'https://blackboard.sejong.ac.kr',
+		cookieSetter: blackboardCookieSetter
+	}
+]);
+Extension.api.storage.onChanged.addListener((changes, areaName) => {
+	if (areaName == 'local') {
+		kmitb.updateCookies();
+	}
+});
+Extension.api.cookies.onChanged.addListener(changeInfo => {
+	if (changeInfo.removed) return;
+	if (changeInfo.cookie.domain == 'blackboard.sejong.ac.kr' &&
+		changeInfo.cookie.name == 'BbRouter') {
+		kmitb.updateCookies();
+	}
+});

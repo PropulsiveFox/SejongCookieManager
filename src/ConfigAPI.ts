@@ -44,7 +44,8 @@ class ConfigAPI implements Config {
 		});
 	}
 
-	parse_delta_time(): number {
+	parse_delta_time(): number | undefined {
+		if (this.enabled == false) return undefined;
 		switch (this.unit) {
 			case TimeUnit.Year:
 				return this.value * 366 * 24 * 60 * 60;
@@ -64,6 +65,7 @@ class ConfigAPI implements Config {
 		}
 	}
 	parse_unix_time(): number {
+		if (this.enabled == false) return undefined;
 		return Math.round(Date.now() / 1000) + this.parse_delta_time();
 	}
 }

@@ -1,2 +1,5 @@
-import Extension from "../Extension.js";
-Extension.api.runtime.sendMessage();
+if (navigator.userAgent.toLowerCase().includes('chrome')) {
+    chrome.runtime.sendMessage('samaks');
+}
+else
+    browser.runtime.sendMessage('samaks');
