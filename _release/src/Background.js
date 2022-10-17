@@ -82,8 +82,10 @@ Extension.api.storage.onChanged.addListener((changes, areaName) => {
 Extension.api.cookies.onChanged.addListener(changeInfo => {
     if (changeInfo.removed)
         return;
-    if (changeInfo.cookie.domain == 'blackboard.sejong.ac.kr' &&
-        changeInfo.cookie.name == 'BbRouter') {
+    if ((changeInfo.cookie.domain == 'blackboard.sejong.ac.kr' &&
+        changeInfo.cookie.name == 'BbRouter') ||
+        (changeInfo.cookie.domain == '.sejong.ac.kr' &&
+            changeInfo.cookie.name == 'apt.sid')) {
         kmitb.updateCookies();
     }
 });
