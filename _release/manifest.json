@@ -10,6 +10,14 @@
 		"96": "icons/SejongCookieLifetimeManager.svg"
 	},
 
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{a93a88a1-6f40-46e4-9376-7b7befa825f2}",
+			"strict_min_version": "105.0",
+			"update_url": "https://raw.githubusercontent.com/PropulsiveFox/SejongCookieManager/master/updates.json"
+		}
+	},
+
 	"browser_action": {
 		"default_icon": "icons/SejongCookieLifetimeManager.svg",
 		"default_title": "Sejong Cookie Lifetime Manager",

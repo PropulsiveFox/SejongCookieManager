@@ -1,10 +1,10 @@
 {
 	"addons": {
-		"{}": {
+		"{a93a88a1-6f40-46e4-9376-7b7befa825f2}": {
 			"updates": [
 				{
 					"version": "0.1.0",
-					"update_link": null
+					"update_link": "https://github.com/PropulsiveFox/SejongCookieManager/releases/download/v0.1.0/SejongCookieManager-0.1.0.xpi"
 				}
 			]
 		}
