@@ -5,6 +5,10 @@
 				{
 					"version": "0.1.0",
 					"update_link": "https://github.com/PropulsiveFox/SejongCookieManager/releases/download/v0.1.0/SejongCookieManager-0.1.0.xpi"
+				},
+				{
+					"version": "0.1.1",
+					"update_link": "https://github.com/PropulsiveFox/SejongCookieManager/releases/download/v0.1.1/SejongCookieManager-0.1.1.xpi"
 				}
 			]
 		}

@@ -2,6 +2,7 @@ import Extension from "./Extension.js";
 import ConfigCookies from "./ConfigCookies.js";
 
 const defaultCookieSetter: ConfigCookies.CookieSetter = function (config, cookieWrap) {
+	if (!cookieWrap.cookie) return;
 	cookieWrap.cookie.expirationDate = config.parse_unix_time();
 }
 
@@ -9,7 +10,7 @@ const defaultCookieSetter: ConfigCookies.CookieSetter = function (config, cookie
 	samaks
 */
 const portalCookieSetter: ConfigCookies.CookieSetter = function (config, cookieWrap) {
-	if (cookieWrap.cookie == null) cookieWrap.cookie = {
+	if (!cookieWrap.cookie) cookieWrap.cookie = {
 		name: 'chknos',
 		value: 'false',
 		domain: 'portal.sejong.ac.kr',
@@ -56,6 +57,8 @@ const blackboardCookieSetter: ConfigCookies.CookieSetter = function (config, coo
 		xsrf: string
 	};
 
+	if (!cookieWrap.cookie) return;
+
 	let value = cookieWrap.cookie.value;
 	let parsedValue = value.split(',')
 		.map(str => str.split(':'))
@@ -76,17 +79,40 @@ const blackboardCookieSetter: ConfigCookies.CookieSetter = function (config, coo
 	defaultCookieSetter(config, cookieWrap);
 }
 let kmitb = new ConfigCookies('kmitb', [
-	{
-		name: 'apt.sid',
-		url: 'https://.sejong.ac.kr',
-		cookieSetter: defaultCookieSetter
-	},
+	// {
+	// 	name: 'apt.sid',
+	// 	url: 'https://.sejong.ac.kr',
+	// 	cookieSetter: defaultCookieSetter
+	// },
+	// {
+	// 	name: 'AWSELBCORS',
+	// 	url: 'https://blackboard.sejong.ac.kr',
+	// 	cookieSetter: defaultCookieSetter
+	// },
+	// {
+	// 	name: 'AWSELB',
+	// 	url: 'https://blackboard.sejong.ac.kr',
+	// 	cookieSetter: defaultCookieSetter
+	// },
 	{
 		name: 'BbRouter',
 		url: 'https://blackboard.sejong.ac.kr',
 		cookieSetter: blackboardCookieSetter
+	},
+	// {
+	// 	name: 'JSESSIONID',
+	// 	url: 'https://blackboard.sejong.ac.kr/learn/api',
+	// 	cookieSetter: defaultCookieSetter
+	// },
+	{
+		name: 'ssotoken',
+		url: 'https://.sejong.ac.kr',
+		cookieSetter: defaultCookieSetter
 	}
 ]);
+let kmitbNames = kmitb.cookiePackages.map(cookiePackage => {
+	return cookiePackage.cookieWrap.target.name;
+});
 Extension.api.storage.onChanged.addListener((changes, areaName) => {
 	if (areaName == 'local') {
 		kmitb.updateCookies();
@@ -94,10 +120,9 @@ Extension.api.storage.onChanged.addListener((changes, areaName) => {
 });
 Extension.api.cookies.onChanged.addListener(changeInfo => {
 	if (changeInfo.removed) return;
-	if ((changeInfo.cookie.domain == 'blackboard.sejong.ac.kr' &&
-		changeInfo.cookie.name == 'BbRouter') ||
-		(changeInfo.cookie.domain == '.sejong.ac.kr' &&
-		changeInfo.cookie.name == 'apt.sid')) {
+	if ((changeInfo.cookie.domain == 'blackboard.sejong.ac.kr' ||
+		changeInfo.cookie.domain == '.sejong.ac.kr') &&
+		kmitbNames.includes(changeInfo.cookie.name)) {
 		kmitb.updateCookies();
 	}
 });

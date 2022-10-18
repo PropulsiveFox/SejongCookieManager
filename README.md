@@ -38,5 +38,5 @@ github을 신뢰할 수 있냐는 경고문이 뜨면 계속 설치하시면 됩
 ## 확장 기능이 조작하는 쿠키의 목록
 
 - 'chknos' portal.sejong.ac.kr
-- 'apt.sid' .sejong.ac.kr
+- 'ssotoken' .sejong.ac.kr
 - 'BbRouter' blackboard.sejong.ac.kr
