@@ -19,7 +19,7 @@ function setStyleToFailed(element) {
     element.style.color = '#ff3333';
 }
 let fadeoutTimeout;
-let Configs = new Array(new PopupUIBlock('samaks'), new PopupUIBlock('kmitb'));
+let Configs = new Array(new PopupUIBlock('samaks'), new PopupUIBlock('kmitb'), new PopupUIBlock('uptlb'));
 // load phase
 let loadPromises = new Array();
 Configs.forEach(config => { loadPromises.push(config.set_to_ui()); });

@@ -8,7 +8,7 @@ const defaultCookieSetter = function (config, cookieWrap) {
 /*
     samaks
 */
-const portalCookieSetter = function (config, cookieWrap) {
+const portalKeyboardCookieSetter = function (config, cookieWrap) {
     if (!cookieWrap.cookie)
         cookieWrap.cookie = {
             name: 'chknos',
@@ -30,7 +30,7 @@ let samaks = new ConfigCookies('samaks', [
     {
         name: 'chknos',
         url: 'https://portal.sejong.ac.kr/',
-        cookieSetter: portalCookieSetter
+        cookieSetter: portalKeyboardCookieSetter
     }
 ]);
 Extension.api.runtime.onMessage.addListener(message => {
@@ -46,60 +46,64 @@ Extension.api.storage.onChanged.addListener((changes, areaName) => {
     kmitb
 */
 const blackboardCookieSetter = function (config, cookieWrap) {
+    // type BbRouter = {
+    // 	expires: string,
+    // 	id: string,
+    // 	signature: string,
+    // 	site: string,
+    // 	timeout: string,
+    // 	user: string,
+    // 	v: string,
+    // 	xsrf: string
+    // };
+    // if (!cookieWrap.cookie) return;
+    // let value = cookieWrap.cookie.value;
+    // let parsedValue = value.split(',')
+    // 	.map(str => str.split(':'))
+    // 	.reduce((acc, e) => {
+    // 		acc[e[0].trim()] = e[1].trim();
+    // 		return acc;
+    // 	}, {}) as BbRouter;
+    // parsedValue.expires = config.parse_unix_time().toString();
+    // parsedValue.timeout = config.parse_delta_time().toString();
+    // let keyValues = new Array();
+    // for (let key in parsedValue) {
+    // 	keyValues.push(`${key}:${parsedValue[key]}`);
+    // }
+    // setTimeout(() => {
+    // 	cookieWrap.cookie.value = keyValues.join(',');
+    // }, 10);
+    // don't even try to modify cookie. just set expiration date to max(time, 3hour);
     if (!cookieWrap.cookie)
         return;
-    let value = cookieWrap.cookie.value;
-    let parsedValue = value.split(',')
-        .map(str => str.split(':'))
-        .reduce((acc, e) => {
-        acc[e[0].trim()] = e[1].trim();
-        return acc;
-    }, {});
-    parsedValue.expires = config.parse_unix_time().toString();
-    parsedValue.timeout = config.parse_delta_time().toString();
-    let keyValues = new Array();
-    for (let key in parsedValue) {
-        keyValues.push(`${key}:${parsedValue[key]}`);
-    }
-    setTimeout(() => {
-        cookieWrap.cookie.value = keyValues.join(',');
-    }, 10);
-    defaultCookieSetter(config, cookieWrap);
+    let parsedTime = config.parse_delta_time();
+    parsedTime = parsedTime > 3 * 60 * 60 ? Math.round(Date.now() / 1000) + 3 * 60 * 60 : config.parse_unix_time();
+    cookieWrap.cookie.expirationDate = parsedTime;
 };
 let kmitb = new ConfigCookies('kmitb', [
-    // {
-    // 	name: 'apt.sid',
-    // 	url: 'https://.sejong.ac.kr',
-    // 	cookieSetter: defaultCookieSetter
-    // },
-    // {
-    // 	name: 'AWSELBCORS',
-    // 	url: 'https://blackboard.sejong.ac.kr',
-    // 	cookieSetter: defaultCookieSetter
-    // },
-    // {
-    // 	name: 'AWSELB',
-    // 	url: 'https://blackboard.sejong.ac.kr',
-    // 	cookieSetter: defaultCookieSetter
-    // },
     {
         name: 'BbRouter',
         url: 'https://blackboard.sejong.ac.kr',
         cookieSetter: blackboardCookieSetter
-    },
-    // {
-    // 	name: 'JSESSIONID',
-    // 	url: 'https://blackboard.sejong.ac.kr/learn/api',
-    // 	cookieSetter: defaultCookieSetter
-    // },
-    {
-        name: 'ssotoken',
-        url: 'https://.sejong.ac.kr',
-        cookieSetter: defaultCookieSetter
     }
 ]);
 let kmitbNames = kmitb.cookiePackages.map(cookiePackage => {
     return cookiePackage.cookieWrap.target.name;
+});
+Extension.api.runtime.onMessage.addListener(message => {
+    if (message == 'kmitb') {
+        browser.webRequest.onBeforeRequest.addListener(details => {
+            let timerFilter = browser.webRequest.filterResponseData(details.requestId);
+            timerFilter.ondata = e => {
+                let str = new TextDecoder('utf-8').decode(e.data, { stream: true });
+                str = str.replace(/t\.startTimer=e=>\{.*Event\)\(\)\};/, 't.startTimer=e=>{};');
+                timerFilter.write(new TextEncoder().encode(str));
+            };
+            timerFilter.onstop = e => {
+                timerFilter.disconnect();
+            };
+        }, { urls: ["*://ultra.content.blackboardcdn.com/ultra/uiv3900.50.0-rel.17_414dc44/586-288b2c9c2313504b043b.js"] }, ["blocking"]);
+    }
 });
 Extension.api.storage.onChanged.addListener((changes, areaName) => {
     if (areaName == 'local') {
@@ -113,5 +117,42 @@ Extension.api.cookies.onChanged.addListener(changeInfo => {
         changeInfo.cookie.domain == '.sejong.ac.kr') &&
         kmitbNames.includes(changeInfo.cookie.name)) {
         kmitb.updateCookies();
+    }
+});
+/*
+    uptlb
+*/
+let uptlb = new ConfigCookies('uptlb', [
+    {
+        name: 'ssotoken',
+        url: 'https://.sejong.ac.kr',
+        cookieSetter: defaultCookieSetter
+    },
+    {
+        name: 'POJSESSIONID',
+        url: 'https://.portal.sejong.ac.kr',
+        cookieSetter: defaultCookieSetter
+    }
+]);
+Extension.api.runtime.onMessage.addListener(message => {
+    if (message == 'uptlb')
+        uptlb.updateCookies();
+});
+Extension.api.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName == 'local')
+        uptlb.updateCookies();
+});
+Extension.api.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message == 'uptlb-enabled') {
+        let valuePromise = new Promise((resolve, reject) => {
+            if (uptlb.config.enabled == true) {
+                uptlb.updateCookies().then(() => resolve(true)).catch(() => resolve(false));
+            }
+            else
+                resolve(false);
+        });
+        console.log('got message uptlb-enabled!');
+        console.log(valuePromise);
+        return sendResponse({ valuePromise: valuePromise });
     }
 });

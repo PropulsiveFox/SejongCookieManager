@@ -26,7 +26,8 @@ let fadeoutTimeout;
 
 let Configs = new Array(
 	new PopupUIBlock('samaks'),
-	new PopupUIBlock('kmitb')
+	new PopupUIBlock('kmitb'),
+	new PopupUIBlock('uptlb'),
 );
 
 // load phase

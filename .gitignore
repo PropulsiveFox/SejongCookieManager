@@ -2,3 +2,4 @@ node_modules*
 package-lock.json
 _release/web-ext-artifacts
 _source
+reverseEngineer.js

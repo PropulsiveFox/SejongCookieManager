@@ -27,7 +27,10 @@
 	"permissions": [
 		"storage",
 		"cookies",
-		"*://*.sejong.ac.kr/*"
+		"webRequest",
+		"webRequestBlocking",
+		"*://*.sejong.ac.kr/*",
+		"*://*.blackboardcdn.com/*"
 	],
 
 	"background": {
@@ -37,7 +40,15 @@
 	"content_scripts": [
 		{
 			"matches": ["*://portal.sejong.ac.kr/*"],
-			"js": ["src/page_specific/portal.js"]
+			"js": ["src/page_specific/portal_update.js"]
+		},
+		{
+			"matches": ["*://portal.sejong.ac.kr/user/*"],
+			"js": ["src/page_specific/portal_do_not_kick.js"]
+		},
+		{
+			"matches": ["*://blackboard.sejong.ac.kr/*"],
+			"js": ["src/page_specific/blackboard.js"]
 		}
 	]
 }
