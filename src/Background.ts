@@ -179,14 +179,19 @@ Extension.api.storage.onChanged.addListener((changes, areaName) => {
 });
 Extension.api.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	if (message == 'uptlb-enabled') {
-		let valuePromise = new Promise((resolve, reject) => {
-			if (uptlb.config.enabled == true) {
-				uptlb.updateCookies().then(() => resolve(true)).catch(() => resolve(false));
-			}
-			else resolve(false);
-		});
-		console.log('got message uptlb-enabled!');
-		console.log(valuePromise);
-		return sendResponse({valuePromise: valuePromise});
+		if (uptlb.config.enabled == true) return sendResponse({ value: true });
+
+
+		// let valuePromise = new Promise((resolve, reject) => {
+		// 	if (uptlb.config.enabled == true) {
+		// 		return uptlb.updateCookies().then(() => resolve(true)).catch(() => resolve(false));
+		// 	}
+		// 	else return resolve(false);
+		// });
+
+
+		// console.log('got message uptlb-enabled!');
+		// console.log(valuePromise);
+		// return sendResponse({valuePromise: valuePromise});
 	}
 });

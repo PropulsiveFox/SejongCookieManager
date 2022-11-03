@@ -7,12 +7,16 @@ else {
 
 	// look for login page
 	browser.runtime.sendMessage('uptlb-enabled').then(response => {
-		console.log('got response!');
-		response.valuePromise.then(shoudRedirect => {
-			if (shoudRedirect && document.querySelector('span#login-button')) {
-				window.location.href = 'https://portal.sejong.ac.kr/jsp/login/bbfrmv3.jsp';
-			}
-		});
+		if (response.value && document.querySelector('span#login-button')) {
+			window.location.href = 'https://portal.sejong.ac.kr/jsp/login/bbfrmv3.jsp';
+		}
+
+
+		// console.log('got response!');
+		// response.valuePromise.then(shoudRedirect => {
+		// 	if (shoudRedirect && document.querySelector('span#login-button')) {
+		// 	}
+		// });
 	});
 }
 
