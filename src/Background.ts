@@ -166,7 +166,7 @@ let uptlb = new ConfigCookies('uptlb', [
 		cookieSetter: defaultCookieSetter
 	},
 	{
-		name: 'POJSESSIONID',
+		name: 'PO_JSESSIONID',
 		url: 'https://.portal.sejong.ac.kr',
 		cookieSetter: defaultCookieSetter
 	}
