@@ -102,7 +102,7 @@ Extension.api.runtime.onMessage.addListener(message => {
             timerFilter.onstop = e => {
                 timerFilter.disconnect();
             };
-        }, { urls: ["*://ultra.content.blackboardcdn.com/ultra/uiv3900.50.0-rel.17_414dc44/586-288b2c9c2313504b043b.js"] }, ["blocking"]);
+        }, { urls: ["*://ultra.content.blackboardcdn.com/ultra/*.js"] }, ["blocking"]);
     }
 });
 Extension.api.storage.onChanged.addListener((changes, areaName) => {
